@@ -1,44 +1,25 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly.graph_objs as go
+from dash.dependencies import Input, Output
 
-########### Set up the chart
-beers=['Chesapeake Stout', 'Snake Dog IPA', 'Imperial Porter', 'Double Dog IPA']
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-bitterness = go.Bar(
-    x=beers,
-    y=[35, 60, 85, 75],
-    name='IBU',
-    marker={'color':'red'}
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+app.layout = html.Div([
+    dcc.Input(id='my-id', value='initial value', type='text'),
+    html.Div(id='my-div')
+])
+
+
+@app.callback(
+    Output(component_id='my-div', component_property='children'),
+    [Input(component_id='my-id', component_property='value')]
 )
-alcohol = go.Bar(
-    x=beers,
-    y=[5.4, 7.1, 9.2, 4.3],
-    name='ABV',
-    marker={'color':'blue'}
-)
+def update_output_div(input_value):
+    return 'You\'ve entered "{}"'.format(input_value)
 
-beer_data = [bitterness, alcohol]
-beer_layout = go.Layout(
-    barmode='group',
-    title = 'Beer Comparison'
-)
-
-beer_fig = go.Figure(data=beer_data, layout=beer_layout)
-
-########### Display the chart
-
-app = dash.Dash()
-server = app.server
-
-app.layout = html.Div(children=[
-    html.H1('Flying Dog Beers'),
-    dcc.Graph(
-        id='flyingdog',
-        figure=beer_fig
-    )]
-)
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(debug=True)
